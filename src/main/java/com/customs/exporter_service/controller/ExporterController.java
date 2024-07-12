@@ -2,10 +2,12 @@ package com.customs.exporter_service.controller;
 
 import com.customs.exporter_service.model.Exporter;
 import com.customs.exporter_service.service.ExporterService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,5 +41,15 @@ public class ExporterController {
         Optional<Exporter> exportador = exportadorService.obtenerExportadorPorId(id);
         return exportador.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<Exporter> actualizarEstadoExportador(@PathVariable Integer id, @RequestBody String nuevoEstado) {
+        try {
+            Exporter exportador = exportadorService.actualizarEstadoExportador(id, nuevoEstado);
+            return ResponseEntity.ok(exportador);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
